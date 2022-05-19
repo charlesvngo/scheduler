@@ -3,59 +3,34 @@ import axios from "axios";
 import "components/Application.scss";
 import DayList from "./DayList";
 import Appointment from "./Appointment";
-
-const appointments = {
-  1: {
-    id: 1,
-    time: "12pm",
-  },
-  2: {
-    id: 2,
-    time: "1pm",
-    interview: {
-      student: "Lydia Miller-Jones",
-      interviewer: {
-        id: 3,
-        name: "Sylvia Palmer",
-        avatar: "https://i.imgur.com/LpaY82x.png",
-      },
-    },
-  },
-  3: {
-    id: 3,
-    time: "2pm",
-  },
-  4: {
-    id: 4,
-    time: "3pm",
-    interview: {
-      student: "Archie Andrews",
-      interviewer: {
-        id: 4,
-        name: "Cohana Roy",
-        avatar: "https://i.imgur.com/FK8V841.jpg",
-      },
-    },
-  },
-  5: {
-    id: 5,
-    time: "4pm",
-  },
-};
+import { getAppointmentsForDay } from "helpers/selectors";
 
 const Application = () => {
-  const [day, setDay] = useState("Monday");
-  const [days, setDays] = useState([]);
+  const [state, setState] = useState({
+    day: "Monday",
+    days: [],
+    appointments: {}
+  });
+
+  let dailyAppointments = [];
+  const setDay = day => setState({ ...state, day });
 
   useEffect(() => {
-    axios.get('/api/days')
-      .then((response) => setDays(response.data))
+    Promise.all([
+      axios.get('/api/days'),
+      axios.get('/api/appointments'),
+      axios.get('/api/interviewers')
+    ]).then((all) => {
+      const [ days, appointments, interviewers ] = all
+      setState(prev => ({ ...prev, days: days.data, appointments: appointments.data, interviews: interviewers.data}))
+    });
   },[])
 
-  let appointmentArray = Object.values(appointments).map((appointment) => (
+  dailyAppointments = getAppointmentsForDay(state, state.day)
+
+  let appointmentArray = dailyAppointments.map((appointment) => (
     <Appointment key={appointment.id} {...appointment} />
   ));
-  appointmentArray.push(<Appointment key="last" time="5pm" />);
 
   return (
     <main className="layout">
@@ -67,7 +42,11 @@ const Application = () => {
         />
         <hr className="sidebar__separator sidebar--centered" />
         <nav className="sidebar__menu">
-          <DayList days={days} value={day} onChange={setDay} />
+          <DayList 
+            days={state.days} 
+            value={state.day} 
+            onChange={setDay} 
+          />
         </nav>
         <img
           className="sidebar__lhl sidebar--centered"
@@ -75,7 +54,10 @@ const Application = () => {
           alt="Lighthouse Labs"
         />
       </section>
-      <section className="schedule">{appointmentArray}</section>
+      <section className="schedule">
+        {appointmentArray}
+        <Appointment key="last" time="5pm" />
+      </section>
     </main>
   );
 };
