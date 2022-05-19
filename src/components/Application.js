@@ -1,76 +1,61 @@
-import React, { useState } from "react";
-import DayList from "./DayList";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import "components/Application.scss";
+import DayList from "./DayList";
 import Appointment from "./Appointment";
 
-const days = [
-  {
-    id: 1,
-    name: "Monday",
-    spots: 2,
-  },
-  {
-    id: 2,
-    name: "Tuesday",
-    spots: 5,
-  },
-  {
-    id: 3,
-    name: "Wednesday",
-    spots: 0,
-  },
-];
-
 const appointments = {
-  "1": {
+  1: {
     id: 1,
     time: "12pm",
   },
-  "2": {
+  2: {
     id: 2,
     time: "1pm",
     interview: {
       student: "Lydia Miller-Jones",
-      interviewer:{
+      interviewer: {
         id: 3,
         name: "Sylvia Palmer",
         avatar: "https://i.imgur.com/LpaY82x.png",
-      }
-    }
+      },
+    },
   },
-  "3": {
+  3: {
     id: 3,
     time: "2pm",
   },
-  "4": {
+  4: {
     id: 4,
     time: "3pm",
     interview: {
       student: "Archie Andrews",
-      interviewer:{
+      interviewer: {
         id: 4,
         name: "Cohana Roy",
         avatar: "https://i.imgur.com/FK8V841.jpg",
-      }
-    }
+      },
+    },
   },
-  "5": {
+  5: {
     id: 5,
     time: "4pm",
-  }
+  },
 };
 
-
-
-const Application = (props) => {
+const Application = () => {
   const [day, setDay] = useState("Monday");
-  let appointmentArray = Object.values(appointments).map(appointment => (
-    <Appointment 
-      key={appointment.id}
-      {...appointment}
-    />
+  const [days, setDays] = useState([]);
+
+  useEffect(() => {
+    axios.get('/api/days')
+      .then((response) => setDays(response.data))
+  },[])
+
+  let appointmentArray = Object.values(appointments).map((appointment) => (
+    <Appointment key={appointment.id} {...appointment} />
   ));
-  appointmentArray.push(<Appointment key="last" time="5pm" />)
+  appointmentArray.push(<Appointment key="last" time="5pm" />);
 
   return (
     <main className="layout">
@@ -90,11 +75,9 @@ const Application = (props) => {
           alt="Lighthouse Labs"
         />
       </section>
-      <section className="schedule">
-        {appointmentArray}
-      </section>
+      <section className="schedule">{appointmentArray}</section>
     </main>
   );
-}
+};
 
 export default Application;
