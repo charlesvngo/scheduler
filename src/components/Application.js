@@ -10,7 +10,7 @@ const Application = () => {
     day: "Monday",
     days: [],
     appointments: {},
-    interviews: {}
+    interviewers: {}
   });
 
   useEffect(() => {
@@ -20,7 +20,7 @@ const Application = () => {
       axios.get('/api/interviewers')
     ]).then((all) => {
       const [ days, appointments, interviewers ] = all
-      setState(prev => ({ ...prev, days: days.data, appointments: appointments.data, interviews: interviewers.data}))
+      setState(prev => ({ ...prev, days: days.data, appointments: appointments.data, interviewers: interviewers.data}))
     });
   },[])
 
