@@ -1,5 +1,6 @@
 import React from "react";
 
+// If there is an error connecting, show error prompt
 const Error = (props) => {
   return (
     <main className="appointment__card appointment__card--error">

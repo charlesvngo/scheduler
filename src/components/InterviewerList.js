@@ -2,6 +2,7 @@ import React from "react";
 import InterviewerListItem from "./InterviewerListItem";
 import "components/InterviewerList.scss";
 
+// interviewer icons that can be clicked
 const InterviewerList = (props) => {
   const interviewerArray = props.interviewers.map((interviewer) => {
     return <InterviewerListItem

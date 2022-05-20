@@ -1,5 +1,6 @@
 import React from "react";
 
+// Shows loading bars when creating and removing appointments
 const Status = (props) => {
   return (
     <main className="appointment__card appointment__card--status">

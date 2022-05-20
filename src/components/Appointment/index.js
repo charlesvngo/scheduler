@@ -10,9 +10,10 @@ const EMPTY = "EMPTY";
 const SHOW = "SHOW";
 const CREATE = "CREATE";
 
+// Appointment cards
 const Appointment = (props) => {
+  // Calls useVisualMode custom hook to track state of the appointment element. Mode determines what to show on the card.
   const { mode, transition, back } = useVisualMode(props.interview ? SHOW : EMPTY);
-
   return (
     <article className="appointment">
     <Header time={props.time} />
@@ -20,11 +21,11 @@ const Appointment = (props) => {
     {mode === SHOW && (
       <Show
         student={props.interview.student}
-        interview={props.interview}
+        interviewer={props.interview.interviewer}
       />
     )}
     {mode === CREATE && (
-      <Form interviewers={[]} onCancel={()=> back()}/>
+      <Form interviewers={props.interviewers} onCancel={()=> back()}/>
     )}
     </article>
   )

@@ -2,16 +2,18 @@ import React, { useState } from 'react';
 import Button from 'components/Button';
 import InterviewerList from 'components/InterviewerList';
 
+// When creating or editing an appointment, form is shown
 const Form = (props) => {
+  // States to track input field and interviewer selector
   const [student, setStudent] = useState(props.student || "");
   const [interviewer, setInterviewer] = useState(props.interviewer || null);
   const interviewerId = interviewer ? interviewer.id : null
 
+  // Helper functions to reset inputs
   const reset = () => {
     setStudent("");
     setInterviewer(null);
   }
-
   const cancel = () => {
     reset();
     props.onCancel();
@@ -32,7 +34,7 @@ const Form = (props) => {
         </form>
         <InterviewerList 
           value={interviewerId}
-          onChange={(event) => setInterviewer(props.interviewers[event - 1])}
+          onChange={(event) => setInterviewer(props.interviewers.find(interviewer => interviewer.id === event))}
           interviewers={props.interviewers}
         />
       </section>

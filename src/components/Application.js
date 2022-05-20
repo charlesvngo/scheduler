@@ -3,9 +3,10 @@ import axios from "axios";
 import "components/Application.scss";
 import DayList from "./DayList";
 import Appointment from "./Appointment";
-import { getAppointmentsForDay, getInterview } from "helpers/selectors";
+import { getAppointmentsForDay, getInterview, getInterviewersForDay } from "helpers/selectors";
 
 const Application = () => {
+  // Track all information to be passed down props
   const [state, setState] = useState({
     day: "Monday",
     days: [],
@@ -13,6 +14,7 @@ const Application = () => {
     interviewers: {}
   });
 
+  // On load, get information from API and set states
   useEffect(() => {
     Promise.all([
       axios.get('/api/days'),
@@ -24,9 +26,14 @@ const Application = () => {
     });
   },[])
 
+  // Run helper functions to obtain appointments & interviewers for the selected day.
   const appointments = getAppointmentsForDay(state, state.day);
+  const interviewers = getInterviewersForDay(state, state.day);
+  
+  // Create alias for day setter
   const setDay = day => setState({ ...state, day });
 
+  // Variable that holds the day's schedule
   const schedule = appointments.map((appointment) => {
     const interview = getInterview(state, appointment.interview);
     return (
@@ -34,6 +41,7 @@ const Application = () => {
       key={appointment.id} 
       {...appointment}
       interview={interview}
+      interviewers={interviewers}
     />
     )
     }

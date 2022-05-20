@@ -2,7 +2,7 @@ import React from "react";
 import classNames from "classnames";
 import "components/DayListItem.scss";
 
-
+// list items for the side menu
 const DayListItem = (props) => {
   const dayClass = classNames("day-list__item", {
     "day-list__item--selected": props.selected,

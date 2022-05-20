@@ -1,5 +1,6 @@
 import React from "react";
 
+// Appointment card will show current student & interviewer if mode is set to show.
 const Show = (props) => {
   return (
     <main className="appointment__card appointment__card--show">
@@ -7,7 +8,7 @@ const Show = (props) => {
         <h2 className="text--regular">{props.student}</h2>
         <section className="interviewer">
           <h4 className="text--light">Interviewer</h4>
-          <h3 className="text--regular">{props.interview.interviewer.name}</h3>
+          <h3 className="text--regular">{props.interviewer.name}</h3>
         </section>
       </section>
       <section className="appointment__card-right">

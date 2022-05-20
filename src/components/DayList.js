@@ -1,6 +1,7 @@
 import React from "react";
 import DayListItem from "./DayListItem";
 
+// Show sidebar with all necessary information
 const DayList = (props) => {
   const dayList = props.days.map((day) => {
     return <DayListItem 

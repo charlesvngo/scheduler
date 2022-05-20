@@ -1,9 +1,9 @@
 import { useState } from "react";
 
+// Custom hook for the form element. Contains functions to change mode and revert to previous mode.
 export default function useVisualMode(initial) {
   const [mode, setMode] = useState(initial);
   const [history, setHistory] = useState([]);
-  
 
   const transition = (newMode, replace = false) => {
     setHistory([...history, mode]);
