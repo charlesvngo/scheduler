@@ -4,6 +4,12 @@ export const getAppointmentsForDay = (state, day) => {
   return appointmentArray;
 }
 
+export const getInterviewersForDay = (state, day) => {
+  const filteredDay = state.days.filter((days) => days.name === day)
+  const interviewerArray = filteredDay[0] ? filteredDay[0].interviewers.map((interviewerId) => state.interviewers[interviewerId]) : [];
+  return interviewerArray
+}
+
 export const getInterview = (state, interview) => {
   let filteredInterview = {...interview};
   if(!interview) {
