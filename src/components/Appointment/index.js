@@ -21,6 +21,7 @@ const Appointment = (props) => {
   }
   return (
     <article className="appointment">
+    <Header time={props.time} />
     {mode === EMPTY && <Empty onAdd={() => console.log("Clicked onAdd")} />}
     {mode === SHOW && (
       <Show
