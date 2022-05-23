@@ -1,84 +1,36 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React from "react";
 import "components/Application.scss";
 import DayList from "./DayList";
 import Appointment from "./Appointment";
 import { getAppointmentsForDay, getInterview, getInterviewersForDay } from "helpers/selectors";
+import useApplicationData from "../hooks/useApplicationData";
 
 const Application = () => {
-  // Track all information to be passed down props
-  const [state, setState] = useState({
-    day: "Monday",
-    days: [],
-    appointments: {},
-    interviewers: {}
-  });
-
-  // On load, get information from API and set states
-  useEffect(() => {
-    Promise.all([
-      axios.get('/api/days'),
-      axios.get('/api/appointments'),
-      axios.get('/api/interviewers')
-    ]).then((all) => {
-      const [ days, appointments, interviewers ] = all
-      setState(prev => ({ ...prev, days: days.data, appointments: appointments.data, interviewers: interviewers.data}))
-    });
-  },[])
+  // Custom hook that handles initial loading and defines helpers.
+  const {
+    state,
+    setDay,
+    bookInterview,
+    cancelInterview
+   } = useApplicationData();
 
   // Run helper functions to obtain appointments & interviewers for the selected day.
-  const appointments = getAppointmentsForDay(state, state.day);
   const interviewers = getInterviewersForDay(state, state.day);
-  
-  // Create alias for day setter
-  const setDay = day => setState({ ...state, day });
-
-  // Helper function to post interviews to the api.
-  const bookInterview = (id, interview, cb, mode) => {
-    const appointment = {
-      ...state.appointments[id],
-      interview: { ...interview }
-    };
-    const appointments = {
-      ...state.appointments,
-      [id]: appointment
-    }
-    // Return the promise so the component can handle mode transitions
-    return axios.put(`/api/appointments/${id}`, appointment)
-      .then(() => setState({ ...state, appointments }))
-  }
-
-  // Helper function to delete interviews.
-  const cancelInterview = (id, cb, mode) => {
-    const appointment = {
-      ...state.appointments[id],
-      interview: null
-    }
-    const appointments = {
-      ...state.appointments,
-      [id]:appointment
-    }
-    // Return the promise so the component can handle mode transitions
-    return axios.delete(`/api/appointments/${id}`)
-      .then(() => setState({ ...state, appointments }))
-  }
-
-
+  const appointments = getAppointmentsForDay(state, state.day);
 
   // Variable that holds the day's schedule
   const schedule = appointments.map((appointment) => {
     const interview = getInterview(state, appointment.interview);
     return (
-    <Appointment 
-      key={appointment.id} 
-      {...appointment}
-      interview={interview}
-      interviewers={interviewers}
-      bookInterview={bookInterview}
-      cancelInterview={cancelInterview}
-    />
-    )
-    }
+      <Appointment 
+        key={appointment.id}
+        {...appointment}
+        interview={interview}
+        interviewers={interviewers}
+        bookInterview={bookInterview}
+        cancelInterview={cancelInterview}
+      />
+    )}
   );
 
   return (
