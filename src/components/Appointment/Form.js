@@ -4,6 +4,7 @@ import InterviewerList from 'components/InterviewerList';
 
 // When creating or editing an appointment, form is shown
 const Form = (props) => {
+  console.log("props: ", props)
   // States to track input field and interviewer selector
   const [student, setStudent] = useState(props.student || "");
   const [interviewer, setInterviewer] = useState(props.interviewer || null);
@@ -19,7 +20,7 @@ const Form = (props) => {
     props.onCancel();
   }
 
-  
+
 
   return (
     <main className="appointment__card appointment__card--create">

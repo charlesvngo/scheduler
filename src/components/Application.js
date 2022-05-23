@@ -34,7 +34,7 @@ const Application = () => {
   const setDay = day => setState({ ...state, day });
 
   // Helper function to post interviews to the api.
-  const bookInterview = (id, interview) => {
+  const bookInterview = (id, interview, cb, mode) => {
     const appointment = {
       ...state.appointments[id],
       interview: { ...interview }
@@ -43,8 +43,26 @@ const Application = () => {
       ...state.appointments,
       [id]: appointment
     }
-    setState({ ...state, appointments})
+    axios.put(`/api/appointments/${id}`, appointment)
+      .then(() => setState({ ...state, appointments }))
+      .then(() => cb(mode))
   }
+
+  const cancelInterview = (id, cb, mode) => {
+    const appointment = {
+      ...state.appointments[id],
+      interview: null
+    }
+    const appointments = {
+      ...state.appointments,
+      [id]:appointment
+    }
+    axios.delete(`/api/appointments/${id}`)
+      .then(() => setState({ ...state, appointments }))
+      .then(() => cb(mode))
+  }
+
+
 
   // Variable that holds the day's schedule
   const schedule = appointments.map((appointment) => {
@@ -56,6 +74,7 @@ const Application = () => {
       interview={interview}
       interviewers={interviewers}
       bookInterview={bookInterview}
+      cancelInterview={cancelInterview}
     />
     )
     }
