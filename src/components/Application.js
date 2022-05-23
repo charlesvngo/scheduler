@@ -33,6 +33,19 @@ const Application = () => {
   // Create alias for day setter
   const setDay = day => setState({ ...state, day });
 
+  // Helper function to post interviews to the api.
+  const bookInterview = (id, interview) => {
+    const appointment = {
+      ...state.appointments[id],
+      interview: { ...interview }
+    };
+    const appointments = {
+      ...state.appointments,
+      [id]: appointment
+    }
+    setState({ ...state, appointments})
+  }
+
   // Variable that holds the day's schedule
   const schedule = appointments.map((appointment) => {
     const interview = getInterview(state, appointment.interview);
@@ -42,6 +55,7 @@ const Application = () => {
       {...appointment}
       interview={interview}
       interviewers={interviewers}
+      bookInterview={bookInterview}
     />
     )
     }
