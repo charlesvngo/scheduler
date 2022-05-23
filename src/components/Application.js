@@ -43,11 +43,12 @@ const Application = () => {
       ...state.appointments,
       [id]: appointment
     }
-    axios.put(`/api/appointments/${id}`, appointment)
+    // Return the promise so the component can handle mode transitions
+    return axios.put(`/api/appointments/${id}`, appointment)
       .then(() => setState({ ...state, appointments }))
-      .then(() => cb(mode))
   }
 
+  // Helper function to delete interviews.
   const cancelInterview = (id, cb, mode) => {
     const appointment = {
       ...state.appointments[id],
@@ -57,9 +58,9 @@ const Application = () => {
       ...state.appointments,
       [id]:appointment
     }
-    axios.delete(`/api/appointments/${id}`)
+    // Return the promise so the component can handle mode transitions
+    return axios.delete(`/api/appointments/${id}`)
       .then(() => setState({ ...state, appointments }))
-      .then(() => cb(mode))
   }
 
 

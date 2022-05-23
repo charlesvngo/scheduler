@@ -7,6 +7,7 @@ import Empty from "./Empty";
 import Form from "./Form";
 import Status from "./Status";
 import Confirm from "./Confirm";
+import Error from "./Error";
 import useVisualMode from "hooks/useVisualMode";
 const EMPTY = "EMPTY";
 const SHOW = "SHOW";
@@ -15,6 +16,8 @@ const SAVE = "SAVE";
 const DELETE = "DELETE";
 const CONFIRM = "CONFIRM";
 const EDIT = "EDIT";
+const ERROR_SAVE = "ERROR_SAVE";
+const ERROR_DELETE= "ERROR_DELETE"
 
 // Appointment cards
 const Appointment = (props) => {
@@ -28,13 +31,17 @@ const Appointment = (props) => {
       interviewer
     };
     transition(SAVE)
-    props.bookInterview(props.id, interview, transition, SHOW)
+    props.bookInterview(props.id, interview)
+      .then(() => transition(SHOW))
+      .catch(() => transition(ERROR_SAVE, true))
   }
 
   // Function that moves the form to the delete state and posts the delete. Will return an empty appointment after promise is done
   const deleteInterview = () => {
     transition(DELETE)
-    props.cancelInterview(props.id, transition, EMPTY)
+    props.cancelInterview(props.id)
+      .then(() => transition(EMPTY))
+      .catch(() => transition(ERROR_DELETE, true))
   }
 
   return (
@@ -75,6 +82,18 @@ const Appointment = (props) => {
         interviewers={props.interviewers} 
         onCancel={()=> back()} 
         onSave={save}
+      />
+    )}
+    {mode === ERROR_DELETE && (
+      <Error 
+        message={"Error deleting"} 
+        onClose={()=> transition(SHOW, true)}
+      />
+    )}
+    {mode === ERROR_SAVE && (
+      <Error 
+        message={"Error saving"} 
+        onClose={()=> transition(props.interview ? EDIT : EMPTY, true)}
       />
     )}
     </article>
