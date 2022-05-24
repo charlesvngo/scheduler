@@ -1,10 +1,35 @@
-import { useState, useEffect } from "react";
+import { useEffect, useReducer } from "react";
 import axios from "axios";
 
 export default function useVisualMode() {
+  const SET_DAY = "SET_DAY";
+  const SET_APPLICATION_DATA = "SET_APPLICATION_DATA";
+  const SET_INTERVIEW = "SET_INTERVIEW";
+  const SET_DAYS = "SET_DAYS"
 
-  // Track all information to be passed down props
-  const [state, setState] = useState({
+  const reducer = (state, action) => {
+    if(action.type === SET_DAY) {
+      return { ...state, day: action.value };
+    }
+    if(action.type === SET_APPLICATION_DATA) {
+      return { 
+        ...state, 
+        days: action.value.days, 
+        appointments: action.value.appointments,
+        interviewers: action.value.interviewers
+      }
+    }
+    if(action.type === SET_INTERVIEW) {
+      return { ...state, appointments: action.value }
+    }
+    if(action.type === SET_DAYS) {
+      return { ...state, days: action.value }
+    }
+    return state;
+  }
+
+  // Track all information to be passed down props. Takes in a reducer function to determine 
+  const [state, dispatch] = useReducer(reducer, {
     day: "Monday",
     days: [],
     appointments: {},
@@ -19,28 +44,25 @@ export default function useVisualMode() {
       axios.get('/api/interviewers')
     ]).then((all) => {
       const [ days, appointments, interviewers ] = all
-      setState(prev => ({ ...prev, days: days.data, appointments: appointments.data, interviewers: interviewers.data}))
+      dispatch({ type: SET_APPLICATION_DATA , value: {days: days.data, appointments: appointments.data, interviewers: interviewers.data}})
     });
   },[])
 
   // Create alias for day setter
-  const setDay = day => setState({ ...state, day });
+  const setDay = day => dispatch({ type: SET_DAY, value: day });
 
-  const countSpots = (state) => {
-    const day = state.days.find(day => day.name === state.day);
-    const spots = day.appointments.reduce((accumulator, currentAppointment) => {
-      if(state.appointments[currentAppointment].interview === null) {
-        accumulator++;
-      }
-      return accumulator;
-    }, 0)
-    return spots;
-  }
 
-  const updateSpots = (prev, spots) => {
-    const dayList = [ ...prev.days ]
-    const day = dayList.find(day => day.name === state.day);
-    day.spots = spots
+  const updateSpots = (isDelete, id) => {
+    const dayList = [ ...state.days ]
+    const day = dayList.find(day => day.name === state.day)
+    if (isDelete) {
+      day.spots += 1;
+      return dayList;
+    } 
+    if (!state.appointments[id].interview) {
+      day.spots -= 1;
+      return dayList;
+    }
     return dayList;
   }
 
@@ -56,10 +78,8 @@ export default function useVisualMode() {
     }
     // Return the promise so the component can handle mode transitions
     return axios.put(`/api/appointments/${id}`, appointment)
-      .then(() => setState({ ...state, appointments }))
-      .then(() => setState((prev) => {
-        return {...prev , days: updateSpots(prev, countSpots(prev))} 
-      }))
+      .then(() => dispatch({ type: SET_INTERVIEW, value: appointments }))
+      .then(() => dispatch({ type: SET_DAYS, value:  updateSpots(false, id)}))
   }
 
   // Helper function to delete interviews.
@@ -72,13 +92,11 @@ export default function useVisualMode() {
       ...state.appointments,
       [id]:appointment
     }
-
     // Return the promise so the component can handle mode transitions
     return axios.delete(`/api/appointments/${id}`)
-      .then(() => setState({ ...state, appointments }))
-      .then(() => setState((prev) => {
-        return {...prev , days: updateSpots(prev, countSpots(prev))} 
-      }))
+      .then(() => dispatch({ type: SET_INTERVIEW, value: appointments }))
+      .then(() => dispatch({ type: SET_DAYS, value: updateSpots(true, id)}))
+
   }
 
   return { state, setDay, bookInterview, cancelInterview }

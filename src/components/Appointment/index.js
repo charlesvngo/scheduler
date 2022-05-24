@@ -26,6 +26,9 @@ const Appointment = (props) => {
 
   // Creates saves a new appointmnet
   const save = (name, interviewer) => {
+    if (!name || !interviewer) {
+      return;
+    }
     const interview = {
       student: name,
       interviewer
