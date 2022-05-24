@@ -26,8 +26,26 @@ export default function useVisualMode() {
   // Create alias for day setter
   const setDay = day => setState({ ...state, day });
 
+  const countSpots = (state) => {
+    const day = state.days.find(day => day.name === state.day);
+    const spots = day.appointments.reduce((accumulator, currentAppointment) => {
+      if(state.appointments[currentAppointment].interview === null) {
+        accumulator++;
+      }
+      return accumulator;
+    }, 0)
+    return spots;
+  }
+
+  const updateSpots = (prev, spots) => {
+    const dayList = [ ...prev.days ]
+    const day = dayList.find(day => day.name === state.day);
+    day.spots = spots
+    return dayList;
+  }
+
   // Helper function to post interviews to the api.
-  const bookInterview = (id, interview, cb, mode) => {
+  const bookInterview = (id, interview) => {
     const appointment = {
       ...state.appointments[id],
       interview: { ...interview }
@@ -39,10 +57,13 @@ export default function useVisualMode() {
     // Return the promise so the component can handle mode transitions
     return axios.put(`/api/appointments/${id}`, appointment)
       .then(() => setState({ ...state, appointments }))
+      .then(() => setState((prev) => {
+        return {...prev , days: updateSpots(prev, countSpots(prev))} 
+      }))
   }
 
   // Helper function to delete interviews.
-  const cancelInterview = (id, cb, mode) => {
+  const cancelInterview = (id) => {
     const appointment = {
       ...state.appointments[id],
       interview: null
@@ -51,9 +72,13 @@ export default function useVisualMode() {
       ...state.appointments,
       [id]:appointment
     }
+
     // Return the promise so the component can handle mode transitions
     return axios.delete(`/api/appointments/${id}`)
       .then(() => setState({ ...state, appointments }))
+      .then(() => setState((prev) => {
+        return {...prev , days: updateSpots(prev, countSpots(prev))} 
+      }))
   }
 
   return { state, setDay, bookInterview, cancelInterview }
