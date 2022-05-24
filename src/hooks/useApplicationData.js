@@ -1,103 +1,119 @@
 import { useEffect, useReducer } from "react";
 import axios from "axios";
+const SET_DAY = "SET_DAY";
+const SET_APPLICATION_DATA = "SET_APPLICATION_DATA";
+const SET_INTERVIEW = "SET_INTERVIEW";
+const SET_DAYS = "SET_DAYS";
+
 
 export default function useVisualMode() {
-  const SET_DAY = "SET_DAY";
-  const SET_APPLICATION_DATA = "SET_APPLICATION_DATA";
-  const SET_INTERVIEW = "SET_INTERVIEW";
-  const SET_DAYS = "SET_DAYS"
-
   const reducer = (state, action) => {
-    if(action.type === SET_DAY) {
+    if (action.type === SET_DAY) {
       return { ...state, day: action.value };
     }
-    if(action.type === SET_APPLICATION_DATA) {
-      return { 
-        ...state, 
-        days: action.value.days, 
+    if (action.type === SET_APPLICATION_DATA) {
+      return {
+        ...state,
+        days: action.value.days,
         appointments: action.value.appointments,
-        interviewers: action.value.interviewers
-      }
+        interviewers: action.value.interviewers,
+      };
     }
-    if(action.type === SET_INTERVIEW) {
-      return { ...state, appointments: action.value }
+    if (action.type === SET_INTERVIEW) {
+      return { ...state, appointments: action.value };
     }
-    if(action.type === SET_DAYS) {
-      return { ...state, days: action.value }
+    if (action.type === SET_DAYS) {
+      return { ...state, days: action.value };
     }
     return state;
-  }
+  };
 
-  // Track all information to be passed down props. Takes in a reducer function to determine 
+  // Track all information to be passed down props. Takes in a reducer function to determine
   const [state, dispatch] = useReducer(reducer, {
     day: "Monday",
     days: [],
     appointments: {},
-    interviewers: {}
+    interviewers: {},
   });
 
   // On load, get information from API and set states
   useEffect(() => {
     Promise.all([
-      axios.get('/api/days'),
-      axios.get('/api/appointments'),
-      axios.get('/api/interviewers')
+      axios.get("/api/days"),
+      axios.get("/api/appointments"),
+      axios.get("/api/interviewers"),
     ]).then((all) => {
-      const [ days, appointments, interviewers ] = all
-      dispatch({ type: SET_APPLICATION_DATA , value: {days: days.data, appointments: appointments.data, interviewers: interviewers.data}})
+      const [days, appointments, interviewers] = all;
+      dispatch({
+        type: SET_APPLICATION_DATA,
+        value: {
+          days: days.data,
+          appointments: appointments.data,
+          interviewers: interviewers.data,
+        },
+      });
     });
-  },[])
+  }, []);
 
   // Create alias for day setter
-  const setDay = day => dispatch({ type: SET_DAY, value: day });
+  const setDay = (day) => dispatch({ type: SET_DAY, value: day });
 
-
-  const updateSpots = (isDelete, id) => {
-    const dayList = [ ...state.days ]
-    const day = dayList.find(day => day.name === state.day)
-    if (isDelete) {
+  // Helper function that updates the spots in the daylist state. returns a daylist.
+  const updateSpots = (state, appointments, id) => {
+    // Create a deep copy of the state so the original is not modified
+    const dayList = JSON.parse(JSON.stringify([ ...state.days ]));
+    const day = dayList.find((day) => day.name === state.day);
+    // If the new appointment does not have a scheduled interview, one more spot is now available.
+    if (!appointments[id].interview) {
       day.spots += 1;
       return dayList;
-    } 
+    }
+    // If the old appointment does not have a scheduled interview, one less spot is now available.
     if (!state.appointments[id].interview) {
       day.spots -= 1;
       return dayList;
     }
+    // otherwise, return the daylist without modified spots.
     return dayList;
-  }
+  };
 
   // Helper function to post interviews to the api.
   const bookInterview = (id, interview) => {
     const appointment = {
       ...state.appointments[id],
-      interview: { ...interview }
+      interview: { ...interview },
     };
     const appointments = {
       ...state.appointments,
-      [id]: appointment
-    }
+      [id]: appointment,
+    };
+    const days = updateSpots(state, appointments, id);
+
     // Return the promise so the component can handle mode transitions
-    return axios.put(`/api/appointments/${id}`, appointment)
+    return axios
+      .put(`/api/appointments/${id}`, appointment)
       .then(() => dispatch({ type: SET_INTERVIEW, value: appointments }))
-      .then(() => dispatch({ type: SET_DAYS, value:  updateSpots(false, id)}))
-  }
+      .then(() => dispatch({ type: SET_DAYS, value: days }));
+  };
 
   // Helper function to delete interviews.
   const cancelInterview = (id) => {
     const appointment = {
       ...state.appointments[id],
-      interview: null
-    }
+      interview: null,
+    };
     const appointments = {
       ...state.appointments,
-      [id]:appointment
-    }
+      [id]: appointment,
+    };
+    const days = updateSpots(state, appointments, id);
+
     // Return the promise so the component can handle mode transitions
-    return axios.delete(`/api/appointments/${id}`)
+    return axios
+      .delete(`/api/appointments/${id}`)
       .then(() => dispatch({ type: SET_INTERVIEW, value: appointments }))
-      .then(() => dispatch({ type: SET_DAYS, value: updateSpots(true, id)}))
+      .then(() => dispatch({ type: SET_DAYS, value: days }));
+  };
 
-  }
-
-  return { state, setDay, bookInterview, cancelInterview }
+  return { state, setDay, bookInterview, cancelInterview };
 }
