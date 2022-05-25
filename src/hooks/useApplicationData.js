@@ -34,13 +34,13 @@ export default function useVisualMode() {
     days: [],
     appointments: {},
     interviewers: {},
+    webSocket: null
   });
 
   // On load, get information from API and set states
   useEffect(() => {
+    state.webSocket = new WebSocket(process.env.REACT_APP_WEBSOCKET_URL)
     // establish connection via websocket
-    const webSocket = new WebSocket(process.env.REACT_APP_WEBSOCKET_URL)
-
     Promise.all([
       axios.get("/api/days"),
       axios.get("/api/appointments"),
@@ -61,26 +61,22 @@ export default function useVisualMode() {
   }, []);
 
   useEffect(() => {
-    const webSocket = new WebSocket(process.env.REACT_APP_WEBSOCKET_URL)
-
-    webSocket.onmessage = function (event) {
+    state.webSocket.onmessage = function (event) {
       const { id, interview, type } = JSON.parse(event.data)
-      if (interview) {
-        const webSocketAppointment = {
-          ...state.appointments[id], 
-          interview: { ...interview },
-        };
-        const webSocketAppointments = {
-          ...state.appointments,
-          [id]: webSocketAppointment,
-        };
-        dispatch({ type, value: {appointments: webSocketAppointments} })
+      const appointment = {
+        ...state.appointments[id],
+        interview: interview ? { ...interview } : null
       }
-      
+      const appointments = {
+        ...state.appointments,
+        [id]: appointment,
+      }
+      dispatch({ type, value: appointments });
+      const days = updateSpots(state, appointments, id);
+      dispatch({ type: SET_DAYS, value: days });
     }
-
-    return () => { webSocket.close() }
-  }, [])
+    return
+  }, [state])
 
   // Create alias for day setter
   const setDay = (day) => dispatch({ type: SET_DAY, value: day });
