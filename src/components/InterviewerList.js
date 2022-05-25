@@ -1,5 +1,6 @@
 import React from "react";
 import InterviewerListItem from "./InterviewerListItem";
+import PropTypes from 'prop-types'; 
 import "components/InterviewerList.scss";
 
 // interviewer icons that can be clicked
@@ -20,6 +21,10 @@ const InterviewerList = (props) => {
       <ul className={"interviewers__list"}>{interviewerArray}</ul>
     </section>
   );
+};
+
+InterviewerList.propTypes = {
+  interviewers: PropTypes.array.isRequired
 };
 
 export default InterviewerList;
