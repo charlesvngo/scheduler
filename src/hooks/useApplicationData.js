@@ -40,28 +40,47 @@ export default function useVisualMode() {
   useEffect(() => {
     // establish connection via websocket
     const webSocket = new WebSocket(process.env.REACT_APP_WEBSOCKET_URL)
-    webSocket.onopen = (event) => {
-      webSocket.send("ping");
-    }
 
     Promise.all([
       axios.get("/api/days"),
       axios.get("/api/appointments"),
       axios.get("/api/interviewers"),
-    ]).then((all) => {
-      const [days, appointments, interviewers] = all;
-      dispatch({
-        type: SET_APPLICATION_DATA,
-        value: {
-          days: days.data,
-          appointments: appointments.data,
-          interviewers: interviewers.data,
-        },
-      });
-    });
-    // Cleanup to close websocket
-    return () => { webSocket.close() };
+    ])
+      .then((all) => {
+        const [days, appointments, interviewers] = all;
+        dispatch({
+          type: SET_APPLICATION_DATA,
+          value: {
+            days: days.data,
+            appointments: appointments.data,
+            interviewers: interviewers.data,
+          },
+        })
+      })
+    return
   }, []);
+
+  useEffect(() => {
+    const webSocket = new WebSocket(process.env.REACT_APP_WEBSOCKET_URL)
+
+    webSocket.onmessage = function (event) {
+      const { id, interview, type } = JSON.parse(event.data)
+      if (interview) {
+        const webSocketAppointment = {
+          ...state.appointments[id], 
+          interview: { ...interview },
+        };
+        const webSocketAppointments = {
+          ...state.appointments,
+          [id]: webSocketAppointment,
+        };
+        dispatch({ type, value: {appointments: webSocketAppointments} })
+      }
+      
+    }
+
+    return () => { webSocket.close() }
+  }, [])
 
   // Create alias for day setter
   const setDay = (day) => dispatch({ type: SET_DAY, value: day });
