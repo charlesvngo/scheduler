@@ -6,7 +6,6 @@ import {
   render,
   cleanup, 
   waitForElement, 
-  waitForElementToBeRemoved,
   fireEvent, 
   getByText, 
   getAllByTestId, 
