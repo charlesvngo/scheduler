@@ -39,7 +39,7 @@ const Form = (props) => {
   return (
     <main className="appointment__card appointment__card--create">
       <section className="appointment__card-left">
-        <form autoComplete="off" onSubmit={event => event.preventDefault()}>
+        <form autoComplete="off" onSubmit={event => event.preventDefault()} data-testid="form">
           <input
             data-testid="student-name-input"
             className="appointment__create-input text--semi-bold"

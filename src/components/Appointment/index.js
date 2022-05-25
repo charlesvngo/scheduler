@@ -26,9 +26,6 @@ const Appointment = (props) => {
 
   // Creates saves a new appointmnet
   const save = (name, interviewer) => {
-    if (!name || !interviewer) {
-      return;
-    }
     const interview = {
       student: name,
       interviewer
@@ -96,7 +93,7 @@ const Appointment = (props) => {
     {mode === ERROR_SAVE && (
       <Error 
         message={"Error saving"} 
-        onClose={()=> transition(props.interview ? EDIT : EMPTY, true)}
+        onClose={()=> transition(EMPTY, true)}
       />
     )}
     </article>

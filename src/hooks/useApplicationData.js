@@ -25,7 +25,6 @@ export default function useVisualMode() {
     if (action.type === SET_DAYS) {
       return { ...state, days: action.value };
     }
-    return state;
   };
 
   // Track all information to be passed down props. Takes in a reducer function to determine
@@ -38,11 +37,6 @@ export default function useVisualMode() {
 
   // On load, get information from API and set states
   useEffect(() => {
-    // establish connection via websocket
-    const webSocket = new WebSocket(process.env.REACT_APP_WEBSOCKET_URL)
-    webSocket.onopen = (event) => {
-      webSocket.send("ping");
-    }
 
     Promise.all([
       axios.get("/api/days"),
@@ -59,8 +53,8 @@ export default function useVisualMode() {
         },
       });
     });
-    // Cleanup to close websocket
-    return () => { webSocket.close() };
+    
+    return
   }, []);
 
   // Create alias for day setter
