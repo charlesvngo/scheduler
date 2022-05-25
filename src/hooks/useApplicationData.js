@@ -38,6 +38,12 @@ export default function useVisualMode() {
 
   // On load, get information from API and set states
   useEffect(() => {
+    // establish connection via websocket
+    const webSocket = new WebSocket(process.env.REACT_APP_WEBSOCKET_URL)
+    webSocket.onopen = (event) => {
+      webSocket.send("ping");
+    }
+
     Promise.all([
       axios.get("/api/days"),
       axios.get("/api/appointments"),
@@ -53,6 +59,8 @@ export default function useVisualMode() {
         },
       });
     });
+    // Cleanup to close websocket
+    return () => { webSocket.close() };
   }, []);
 
   // Create alias for day setter
