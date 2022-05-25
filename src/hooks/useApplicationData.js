@@ -1,32 +1,15 @@
 import { useEffect, useReducer } from "react";
 import axios from "axios";
-const SET_DAY = "SET_DAY";
-const SET_APPLICATION_DATA = "SET_APPLICATION_DATA";
-const SET_INTERVIEW = "SET_INTERVIEW";
-const SET_DAYS = "SET_DAYS";
+import {
+  reducer,
+  SET_DAY,
+  SET_APPLICATION_DATA,
+  SET_INTERVIEW,
+  SET_DAYS
+} from "reducers/application";
 
 
 export default function useVisualMode() {
-  const reducer = (state, action) => {
-    if (action.type === SET_DAY) {
-      return { ...state, day: action.value };
-    }
-    if (action.type === SET_APPLICATION_DATA) {
-      return {
-        ...state,
-        days: action.value.days,
-        appointments: action.value.appointments,
-        interviewers: action.value.interviewers,
-      };
-    }
-    if (action.type === SET_INTERVIEW) {
-      return { ...state, appointments: action.value };
-    }
-    if (action.type === SET_DAYS) {
-      return { ...state, days: action.value };
-    }
-    return state;
-  };
 
   // Track all information to be passed down props. Takes in a reducer function to determine
   const [state, dispatch] = useReducer(reducer, {
