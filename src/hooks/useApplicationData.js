@@ -1,31 +1,15 @@
 import { useEffect, useReducer } from "react";
 import axios from "axios";
-const SET_DAY = "SET_DAY";
-const SET_APPLICATION_DATA = "SET_APPLICATION_DATA";
-const SET_INTERVIEW = "SET_INTERVIEW";
-const SET_DAYS = "SET_DAYS";
+import {
+  reducer,
+  SET_DAY,
+  SET_APPLICATION_DATA,
+  SET_INTERVIEW,
+  SET_DAYS
+} from "reducers/application";
 
 
 export default function useVisualMode() {
-  const reducer = (state, action) => {
-    if (action.type === SET_DAY) {
-      return { ...state, day: action.value };
-    }
-    if (action.type === SET_APPLICATION_DATA) {
-      return {
-        ...state,
-        days: action.value.days,
-        appointments: action.value.appointments,
-        interviewers: action.value.interviewers,
-      };
-    }
-    if (action.type === SET_INTERVIEW) {
-      return { ...state, appointments: action.value };
-    }
-    if (action.type === SET_DAYS) {
-      return { ...state, days: action.value };
-    }
-  };
 
   // Track all information to be passed down props. Takes in a reducer function to determine
   const [state, dispatch] = useReducer(reducer, {
@@ -33,29 +17,49 @@ export default function useVisualMode() {
     days: [],
     appointments: {},
     interviewers: {},
+    webSocket: null
   });
 
   // On load, get information from API and set states
   useEffect(() => {
-
+    state.webSocket = new WebSocket(process.env.REACT_APP_WEBSOCKET_URL)
+    // establish connection via websocket
     Promise.all([
       axios.get("/api/days"),
       axios.get("/api/appointments"),
       axios.get("/api/interviewers"),
-    ]).then((all) => {
-      const [days, appointments, interviewers] = all;
-      dispatch({
-        type: SET_APPLICATION_DATA,
-        value: {
-          days: days.data,
-          appointments: appointments.data,
-          interviewers: interviewers.data,
-        },
-      });
-    });
-    
+    ])
+      .then((all) => {
+        const [days, appointments, interviewers] = all;
+        dispatch({
+          type: SET_APPLICATION_DATA,
+          value: {
+            days: days.data,
+            appointments: appointments.data,
+            interviewers: interviewers.data,
+          },
+        })
+      })
     return
   }, []);
+
+  useEffect(() => {
+    state.webSocket.onmessage = function (event) {
+      const { id, interview, type } = JSON.parse(event.data)
+      const appointment = {
+        ...state.appointments[id],
+        interview: interview ? { ...interview } : null
+      }
+      const appointments = {
+        ...state.appointments,
+        [id]: appointment,
+      }
+      dispatch({ type, value: appointments });
+      const days = updateSpots(state, appointments, id);
+      dispatch({ type: SET_DAYS, value: days });
+    }
+    return
+  }, [state])
 
   // Create alias for day setter
   const setDay = (day) => dispatch({ type: SET_DAY, value: day });
