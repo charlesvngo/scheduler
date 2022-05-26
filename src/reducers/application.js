@@ -21,13 +21,7 @@ const reducer = (state, action) => {
   if (action.type === SET_DAYS) {
     return { ...state, days: action.value };
   }
-  throw new Error('tried to reduce with unsupported action type');
+  throw new Error("tried to reduce with unsupported action type");
 };
 
-export {
-  reducer,
-  SET_DAY,
-  SET_APPLICATION_DATA,
-  SET_INTERVIEW,
-  SET_DAYS
-}
+export { reducer, SET_DAY, SET_APPLICATION_DATA, SET_INTERVIEW, SET_DAYS };

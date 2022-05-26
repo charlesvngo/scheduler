@@ -5,68 +5,65 @@ import {
   SET_DAY,
   SET_APPLICATION_DATA,
   SET_INTERVIEW,
-  SET_DAYS
+  SET_DAYS,
 } from "reducers/application";
 
-
 export default function useVisualMode() {
-
   // Track all information to be passed down props. Takes in a reducer function to determine
   const [state, dispatch] = useReducer(reducer, {
     day: "Monday",
     days: [],
     appointments: {},
     interviewers: {},
-    webSocket: null
+    webSocket: null,
   });
 
   // On load, get information from API and set states
   useEffect(() => {
-    state.webSocket = new WebSocket(process.env.REACT_APP_WEBSOCKET_URL)
+    state.webSocket = new WebSocket(process.env.REACT_APP_WEBSOCKET_URL);
     // establish connection via websocket
     Promise.all([
       axios.get("/api/days"),
       axios.get("/api/appointments"),
       axios.get("/api/interviewers"),
-    ])
-      .then((all) => {
-        const [days, appointments, interviewers] = all;
-        dispatch({
-          type: SET_APPLICATION_DATA,
-          value: {
-            days: days.data,
-            appointments: appointments.data,
-            interviewers: interviewers.data,
-          },
-        })
-      })
-    return
+    ]).then((all) => {
+      const [days, appointments, interviewers] = all;
+      dispatch({
+        type: SET_APPLICATION_DATA,
+        value: {
+          days: days.data,
+          appointments: appointments.data,
+          interviewers: interviewers.data,
+        },
+      });
+    });
+    return;
   }, []);
 
   // Wait until state changes before loading webSocket.onmessage
   useEffect(() => {
     state.webSocket.onmessage = function (event) {
-      const { id, interview, type } = JSON.parse(event.data)
+      const { id, interview, type } = JSON.parse(event.data);
       // take the ID and interview object and create an appointment object
       const appointment = {
         ...state.appointments[id],
-        interview: interview ? { ...interview } : null
-      }
+        interview: interview ? { ...interview } : null,
+      };
       const appointments = {
         ...state.appointments,
         [id]: appointment,
-      }
+      };
 
       // update state to the new state value.
       const days = updateSpots(state, appointments, id);
       dispatch({ type, value: appointments });
 
-      // BUG: spots handling currently will only affect the current selected day. 
+      // BUG: spots handling currently will only affect the current selected day.
       // Update spots needs a refactor to count spots based on state
       dispatch({ type: SET_DAYS, value: days });
-    }
-    return
-  }, [state])
+    };
+    return;
+  }, [state]);
 
   // Create alias for day setter
   const setDay = (day) => dispatch({ type: SET_DAY, value: day });
@@ -74,7 +71,7 @@ export default function useVisualMode() {
   // Helper function that updates the spots in the daylist state. returns a daylist.
   const updateSpots = (state, appointments, id) => {
     // Create a deep copy of the state so the original is not modified
-    const dayList = JSON.parse(JSON.stringify([ ...state.days ]));
+    const dayList = JSON.parse(JSON.stringify([...state.days]));
     const day = dayList.find((day) => day.name === state.day);
     // If the new appointment does not have a scheduled interview, one more spot is now available.
     if (!appointments[id].interview) {

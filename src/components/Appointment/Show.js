@@ -19,7 +19,7 @@ const Show = (props) => {
             src="images/edit.png"
             alt="Edit"
           />
-          <img 
+          <img
             onClick={props.onDelete}
             className="appointment__actions-button"
             src="images/trash.png"

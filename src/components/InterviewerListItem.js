@@ -8,7 +8,11 @@ const InterviewerListItem = (props) => {
   });
 
   return (
-    <li className={interviewerClass} selected={props.selected} onClick={props.onChange}>
+    <li
+      className={interviewerClass}
+      selected={props.selected}
+      onClick={props.onChange}
+    >
       <img
         className={"interviewers__item-image"}
         src={props.avatar}
