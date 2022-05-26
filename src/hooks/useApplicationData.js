@@ -38,6 +38,10 @@ export default function useVisualMode() {
       });
     });
     return;
+  // Function will return a linting error regarding state.webSocket being called only once.
+  // This is intended behavior to allow the websocket to only attach once and track the updated
+  // state for the onmessage function below.
+  // eslint-disable-next-line
   }, []);
 
   // Wait until state changes before loading webSocket.onmessage
