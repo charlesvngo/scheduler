@@ -61,9 +61,6 @@ export default function useVisualMode() {
       // update state to the new state value.
       const days = updateSpots(state, appointments, id);
       dispatch({ type, value: appointments });
-
-      // BUG: spots handling currently will only affect the current selected day.
-      // Update spots needs a refactor to count spots based on state
       dispatch({ type: SET_DAYS, value: days });
     };
     return;
@@ -76,15 +73,15 @@ export default function useVisualMode() {
   const updateSpots = (state, appointments, id) => {
     // Create a deep copy of the state so the original is not modified
     const dayList = JSON.parse(JSON.stringify([...state.days]));
-    const day = dayList.find((day) => day.name === state.day);
+    const day = dayList.filter(day => day.appointments.find((appointment => appointment === id)));
     // If the new appointment does not have a scheduled interview, one more spot is now available.
     if (!appointments[id].interview) {
-      day.spots += 1;
+      day[0].spots += 1;
       return dayList;
     }
     // If the old appointment does not have a scheduled interview, one less spot is now available.
     if (!state.appointments[id].interview) {
-      day.spots -= 1;
+      day[0].spots -= 1;
       return dayList;
     }
     // otherwise, return the daylist without modified spots.
