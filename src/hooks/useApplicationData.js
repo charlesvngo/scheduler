@@ -43,9 +43,11 @@ export default function useVisualMode() {
     return
   }, []);
 
+  // Wait until state changes before loading webSocket.onmessage
   useEffect(() => {
     state.webSocket.onmessage = function (event) {
       const { id, interview, type } = JSON.parse(event.data)
+      // take the ID and interview object and create an appointment object
       const appointment = {
         ...state.appointments[id],
         interview: interview ? { ...interview } : null
@@ -54,8 +56,13 @@ export default function useVisualMode() {
         ...state.appointments,
         [id]: appointment,
       }
-      dispatch({ type, value: appointments });
+
+      // update state to the new state value.
       const days = updateSpots(state, appointments, id);
+      dispatch({ type, value: appointments });
+
+      // BUG: spots handling currently will only affect the current selected day. 
+      // Update spots needs a refactor to count spots based on state
       dispatch({ type: SET_DAYS, value: days });
     }
     return

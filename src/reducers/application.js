@@ -21,7 +21,7 @@ const reducer = (state, action) => {
   if (action.type === SET_DAYS) {
     return { ...state, days: action.value };
   }
-  return state;
+  throw new Error('tried to reduce with unsupported action type');
 };
 
 export {

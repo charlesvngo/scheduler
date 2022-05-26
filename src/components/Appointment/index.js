@@ -25,6 +25,7 @@ const Appointment = (props) => {
   // Calls useVisualMode custom hook to track state of the appointment element. Mode determines what to show on the card.
   const { mode, transition, back } = useVisualMode(props.interview ? SHOW : EMPTY);
 
+  // useEffect to handle if a websocket updates the state
   useEffect(() => {
     if (props.interview && mode === EMPTY) {
      transition(SHOW);
