@@ -15,7 +15,7 @@ import {
   getByTestId
 } from "@testing-library/react";
 
-import Application from "components/Application";
+import Application from "../Application";
 
 afterEach(cleanup);
 
