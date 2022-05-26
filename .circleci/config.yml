@@ -28,12 +28,12 @@ deploy:
   steps:
     - add_ssh_keys:
         fingerprints:
-          - "f8:8b:bb:1e:0d:88:dd:94:06:fd:f5:d1:6f:be:63:9d"
+          - "9d:e5:ea:b6:ff:cf:09:54:c3:90:c2:71:ea:1a:c5:ef"
     - checkout
     - run:
         name: Push Master to Production
         command: |
-          git push https://github.com/lighthouse-labs/scheduler.git master:production
+          git push https://github.com/charlesvngo/scheduler.git master:production
 
 
 workflows:
