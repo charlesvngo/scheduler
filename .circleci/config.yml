@@ -44,3 +44,9 @@ workflows:
           filters:
             branches:
               ignore: production
+      - deploy:
+          filters:
+            branches:
+              ignore: production
+          requires:
+            - build
