@@ -3,11 +3,11 @@ Interview Scheduler is a simple and lightweight appointment scheduling tool deve
 
 ## Screenshots
 
-!["Screenshot of home page"]()
+!["Screenshot of home page"](https://github.com/charlesvngo/scheduler/blob/master/docs/Homepage.png?raw=true)
 
-!["Screenshot of form element"]()
+!["Screenshot of form element"](https://github.com/charlesvngo/scheduler/blob/master/docs/Create%20Form.png?raw=true)
 
-!["Gif of creating and deleting an appointment"]()
+!["Gif of creating and deleting an appointment"](https://github.com/charlesvngo/scheduler/blob/master/docs/Create%20and%20Delete.gif?raw=true)
 
 ## Dependencies
 - react
