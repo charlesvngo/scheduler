@@ -28,21 +28,27 @@ Interview Scheduler is a simple and lightweight appointment scheduling tool deve
 
 Download the server at https://github.com/charlesvngo/scheduler-api and follow the install instructions there.
 Install dependencies with `npm install`.
-Create a .env.development file containing the following:
 
+Create a .env.development file in the root directory containing the following:
 ```sh
 REACT_APP_WEBSOCKET_URL=ws://localhost:8001
 PORT=8000
 CHOKIDAR_USEPOLLING=false
 ```
 
-Connect to the server by going to http://localhost:8000 on your browser.
+Create .env file in the root directory containing the following if errors involving babel-loader occur on startup. 
+
+```sh
+SKIP_PREFLIGHT_CHECK=true
+```
 
 ## Running Webpack Development Server
 
 ```sh
 npm start
 ```
+
+Afterwards, connect to the page at http://localhost:8000 on your browser.
 
 ## Running Jest Test Framework
 
