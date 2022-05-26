@@ -1,7 +1,7 @@
 import React from "react";
 import { useEffect } from "react";
 import "components/Appointment/styles.scss";
-import Header from "components/Appointment/Header";
+import Header from "./Header";
 import Show from "./Show";
 import Empty from "./Empty";
 import Form from "./Form";
@@ -17,7 +17,7 @@ const DELETE = "DELETE";
 const CONFIRM = "CONFIRM";
 const EDIT = "EDIT";
 const ERROR_SAVE = "ERROR_SAVE";
-const ERROR_DELETE= "ERROR_DELETE"
+const ERROR_DELETE= "ERROR_DELETE";
 
 // Appointment cards
 const Appointment = (props) => {
