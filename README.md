@@ -29,6 +29,8 @@ Interview Scheduler is a simple and lightweight appointment scheduling tool deve
 Download the server at https://github.com/charlesvngo/scheduler-api and follow the install instructions there.
 Install dependencies with `npm install`.
 
+Connect to the server by going to http://localhost:8000 on your browser.
+
 ## Running Webpack Development Server
 
 ```sh
