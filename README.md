@@ -3,7 +3,7 @@ Interview Scheduler is a simple and lightweight appointment scheduling tool deve
 
 Site preview is hosted on Netlify and database is on heroku. Please allow up to 30 seconds for the appointments to load as heroku needs time to start up the server if left idle.
 
-https://628f39031a81c40008b61ea1--funny-elf-4d9c21.netlify.app/
+https://funny-elf-4d9c21.netlify.app/
 
 
 
