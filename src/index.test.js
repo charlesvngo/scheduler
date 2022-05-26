@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import Application from "components/Application";
+import Application from "./components/Application";
 
 jest.mock("react-dom", () => ({ render: jest.fn() }));
 
