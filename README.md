@@ -3,11 +3,11 @@ Interview Scheduler is a simple and lightweight appointment scheduling tool deve
 
 ## Screenshots
 
-!["Screenshot of home page"]()
+!["Screenshot of home page"](https://github.com/charlesvngo/scheduler/blob/master/docs/Homepage.png?raw=true)
 
-!["Screenshot of form element"]()
+!["Screenshot of form element"](https://github.com/charlesvngo/scheduler/blob/master/docs/Create%20Form.png?raw=true)
 
-!["Gif of creating and deleting an appointment"]()
+!["Gif of creating and deleting an appointment"](https://github.com/charlesvngo/scheduler/blob/master/docs/Create%20and%20Delete.gif?raw=true)
 
 ## Dependencies
 - react
@@ -28,6 +28,8 @@ Interview Scheduler is a simple and lightweight appointment scheduling tool deve
 
 Download the server at https://github.com/charlesvngo/scheduler-api and follow the install instructions there.
 Install dependencies with `npm install`.
+
+Connect to the server by going to http://localhost:8000 on your browser.
 
 ## Running Webpack Development Server
 
